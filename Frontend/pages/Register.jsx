@@ -1,7 +1,37 @@
 import { Link } from "react-router-dom";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { useState } from "react";
 
 const Register = () => {
+  const [error, setError] = useState("");
+
+  async function register(e) {
+    e.preventDefault();
+    console.log("logging in");
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    console.log(data);
+    const res = await fetch("http://localhost:5000/user/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
+
+    console.log(res.status); // ✅ this is the HTTP status
+
+    const msg = await res.json();
+
+    if (!res.ok) {
+      setError(msg.msg || "Something went wrong");
+    }
+
+    console.log(msg);
+  }
+
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
       <div className="w-full max-w-md p-8 space-y-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all">
@@ -14,13 +44,15 @@ const Register = () => {
           </p>
         </div>
 
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={register}>
           <div className="space-y-4">
+            {error != "" ? <div className="text-red-500">{error}</div> : ""}
             <div className="relative group">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
               <input
                 type="text"
                 placeholder="Full Name"
+                name="name"
                 className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all dark:text-white"
                 required
               />
@@ -30,6 +62,7 @@ const Register = () => {
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
               <input
                 type="email"
+                name="email"
                 placeholder="Email Address"
                 className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all dark:text-white"
                 required
@@ -40,6 +73,7 @@ const Register = () => {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
               <input
                 type="password"
+                name="password"
                 placeholder="Password"
                 className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all dark:text-white"
                 required

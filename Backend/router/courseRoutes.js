@@ -1,10 +1,17 @@
 import { Router } from "express";
+import Course from "../model/Course.js";
 
 const router = Router();
 
 // get all courses
-router.get("/", (req, res) => {
-  res.send("All the courses here");
+router.get("/", async (req, res) => {
+  try {
+    const courses = await Course.find();
+
+    res.status(200).json(courses);
+  } catch (e) {
+    req.status(500).json({ msg: err.message });
+  }
 });
 
 // get course

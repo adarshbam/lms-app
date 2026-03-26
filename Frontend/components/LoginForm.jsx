@@ -1,8 +1,35 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Mail, Lock, ArrowRight } from "lucide-react";
+import { useState } from "react";
 
 const LoginForm = ({ onForgotPassword }) => {
+  const [error, setError] = useState("");
+
+  async function login(e) {
+    e.preventDefault();
+    console.log("logging in");
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    console.log(data);
+    const res = await fetch("http://localhost:5000/user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
+    console.log(res.status); // ✅ this is the HTTP status
+
+    const msg = await res.json();
+    if (!res.ok) {
+      setError(msg.msg || "Something went wrong");
+    }
+
+    console.log(msg);
+  }
+
   return (
     <div className="space-y-8">
       <div className="text-center space-y-2">
@@ -14,12 +41,13 @@ const LoginForm = ({ onForgotPassword }) => {
         </p>
       </div>
 
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={login}>
         <div className="space-y-4">
           <div className="relative group">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
             <input
               type="email"
+              name="email"
               placeholder="Email Address"
               className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all dark:text-white"
               required
@@ -30,6 +58,7 @@ const LoginForm = ({ onForgotPassword }) => {
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
             <input
               type="password"
+              name="password"
               placeholder="Password"
               className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all dark:text-white"
               required
@@ -43,7 +72,9 @@ const LoginForm = ({ onForgotPassword }) => {
               type="checkbox"
               className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
             />
-            <span className="text-gray-600 dark:text-gray-400 font-medium">Remember me</span>
+            <span className="text-gray-600 dark:text-gray-400 font-medium">
+              Remember me
+            </span>
           </label>
           <button
             type="button"
@@ -76,12 +107,24 @@ const LoginForm = ({ onForgotPassword }) => {
 
       <div className="grid grid-cols-2 gap-4">
         <button className="flex items-center justify-center px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 mr-2" alt="Google" />
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Google</span>
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            className="w-5 h-5 mr-2"
+            alt="Google"
+          />
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            Google
+          </span>
         </button>
         <button className="flex items-center justify-center px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-          <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" className="w-5 h-5 mr-2" alt="Facebook" />
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Facebook</span>
+          <img
+            src="https://www.svgrepo.com/show/475647/facebook-color.svg"
+            className="w-5 h-5 mr-2"
+            alt="Facebook"
+          />
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            Facebook
+          </span>
         </button>
       </div>
 
